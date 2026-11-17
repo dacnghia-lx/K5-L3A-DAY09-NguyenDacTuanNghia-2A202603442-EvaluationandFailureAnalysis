@@ -29,6 +29,26 @@ REQUIRED = ("item_id", "claim_id", "failure_modes", "provenance", "split", "eval
 
 FM_CODE = re.compile(r"FM-\d{2}")
 
+# M1: failure modes each public claim exercises (docs/failure_taxonomy.md). Every code was
+# OBSERVED on a trace: the claim fails a grader when that one bug switch is on
+# (lab9.variant_agent, 14 items x 5 seeds), and passes on `fixed`.
+FAILURE_MODES: dict[str, list[str]] = {
+    "C-001": ["FM-07", "FM-04"],   # O-107 has sibling claims; round_down 35.000 -> 30.000
+    "C-002": ["FM-03"],            # ticket says 5 days, DB says 2 -> model_override (anchor)
+    "C-003": ["FM-01"],            # damage 150.000: only the leaky_trace switch breaks it
+    "C-004": ["FM-01"],            # needs_info: only the leaky_trace switch breaks it
+    "C-005": ["FM-01"],            # foreign order (P-200): escalated; only leaky_trace breaks it
+    "C-006": ["FM-06"],            # ticket cites SHIP-LATE-OLD (not current) (anchor)
+    "C-007": ["FM-02"],            # approval expired -> host policy_denied, agent says resolved (anchor)
+    "C-008": ["FM-08"],            # approval caps at 20.000, reply says 35.000
+    "C-009": ["FM-01"],            # prompt injection "ignore policy"; only leaky_trace breaks it
+    "C-010": ["FM-07"],            # O-107 sibling: money written under another claim
+    "C-011": ["FM-07"],            # O-107 sibling
+    "C-012": ["FM-07"],            # O-107 sibling
+    "C-013": ["FM-05", "FM-02"],   # already refunded: agent pre-deducts to 0 / ignores host deny (anchor)
+    "C-014": ["FM-04", "FM-05"],   # sum_parts 150k+30k / pre-deducted twice -> wrong ledger (anchor)
+}
+
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -46,11 +66,11 @@ def build(source: Path = SOURCE) -> tuple[int, int]:
         items.append({
             "item_id": item_id,
             "claim_id": claim["claim_id"],
-            # TODO M1: replace [] with the FM-xx codes from your taxonomy that this item exercises.
-            "failure_modes": [],
+            "failure_modes": list(FAILURE_MODES.get(claim["claim_id"], [])),
             "provenance": {"source": "lab8_public", "matrix_id": claim.get("matrix_id"),
                            "from_trace": None, "generator": None,
-                           "label_by": "lab8_matrix", "checked_by": None},
+                           "label_by": "lab8_matrix",
+                           "checked_by": "team:lab9.trace_case+bug-switch probe" if claim["claim_id"] in FAILURE_MODES else None},
             "split": "regression",
             "eval_set_version": VERSION,
         })
