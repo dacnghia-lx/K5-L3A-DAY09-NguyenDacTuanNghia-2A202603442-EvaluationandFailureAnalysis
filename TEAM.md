@@ -6,7 +6,7 @@
 - Lớp: L3A
 - Repo nhóm: `K5-L3A-Day8-MHT-FromWorkflowsToAgents`
 - URL repo: https://github.com/VOX304/K5-L3A-Day8-MHT-FromWorkflowsToAgents
-- URL repo, nhánh nộp, commit chốt:
+- Lab 9 (cá nhân): https://github.com/dacnghia-lx/K5-L3A-DAY09-NguyenDacTuanNghia-2A202603442-EvaluationandFailureAnalysis · nhánh nộp `starter/d09` → PR vào `main` · commit chốt: commit cuối trên PR trước hạn
 
 ## Thành viên
 

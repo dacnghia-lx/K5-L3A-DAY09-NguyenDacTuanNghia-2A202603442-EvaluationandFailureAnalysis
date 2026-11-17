@@ -3,7 +3,7 @@
 Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi số dưới đây được chép từ report do script sinh (`src/reports/*.json`), không gõ tay.
 
 - **Run ID / eval set SHA:** baseline `E-swarm-20261117-8682` · eval set v1 `8682203ba616` · v2: baseline `E-swarm-20261117-e016` · eval set v2 `e016a9d2d722`
-- **Phiên bản:** code nhánh `starter/d09` commit `8a1ff70` · eval set v1 (sha `8682203ba616`) · metric_spec `1.0` (`config/metric_spec.yaml`) · grader `lab9/graders.py` @ `8a1ff70` · seeds 11/22/33/44/55 · MockLLM · Python 3.13
+- **Phiên bản:** code nhánh `starter/d09` commit `34f67da` · eval set v1 (sha `8682203ba616`) · metric_spec `1.0` (`config/metric_spec.yaml`) · grader `lab9/graders.py` @ `34f67da` · seeds 11/22/33/44/55 · MockLLM · Python 3.13
 - **Eval set:** v1, 14 item × 5 seed = 70 trial, nguồn `lab8_public`, nhãn ở `labels_v1.json` (tách khỏi item). `evalset --check` = 0 problem.
 - **Metric & ngưỡng** (trích `metric_spec.yaml`):
 
@@ -49,4 +49,25 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi s�
 | flaky_regression | block | block | **pass_hat_5** 0.5714 < 0.85, slice money_movement. pass_rate trung bình 0.9143 vẫn ≥ 0.85 |
 
 - **Chống gian lận (M7):** `integrity_check` từ chối report có NaN/inf; số dòng ≠ items × seeds; dòng trùng; tập (item, seed) hoặc seeds khác baseline / spec; `evaluator_failures`; giá trị grader None hoặc không phải bool; metric tổng không khớp khi tính lại từ rows (sửa tay); slice tag khác baseline; và ratchet so với `--base-spec` (max tăng, min giảm, blocking → non-blocking, bỏ metric/slice, bỏ `no_significant_drop` / `no_new_failing_items`, đổi seeds / bootstrap, đổi tên eval_set_version). `lab9.traps`: cả 4 trap công khai đều bị chặn với lý do `INTEGRITY`.
-- **Giới hạn cỡ mẫu:** một bug chỉ bật ở 1/5 seed (`rare`, seed 33) và chỉ chạm vài item thì **không phát hiện ổn định với 5 seed**. Ví dụ `quiet_override` + `rare` làm hỏng C-002/C-101/C-102 ở seed 33, đúng các item mà baseline swarm vốn đã hỏng ở seed 55. Mọi metric, mọi slice và tập item fail đều trùng baseline, nên gate cho merge. Mình **không hạ ngưỡng** để "bắt" nó. Cách đúng là thêm seed (n lớn hơn) hoặc thêm item cho FM-03, rồi tăng eval-set version.
+- **Giới hạn cỡ mẫu:** một bug chỉ bật ở khoảng 1/3 seed (công tắc `rare` bật khi `seed % 3 == 0`, trong bộ 11/22/33/44/55 chỉ trúng seed 33) và chỉ chạm vài item thì **không phát hiện ổn định với 5 seed**. Với bug bật ngẫu nhiên tỉ lệ 1/3, xác suất cả 5 seed đều không trúng là (2/3)^5 ≈ 0.13 cho mỗi item. Còn khi đã trúng, nó chỉ làm 1 trong 5 lần chạy của item fail, nên trung bình item chỉ giảm 0.2 và CI paired bootstrap trên 14–28 item gần như luôn chạm 0. Ví dụ `quiet_override` + `rare` làm hỏng C-002/C-101/C-102 ở seed 33, đúng các item mà baseline swarm vốn đã hỏng ở seed 55. Mọi metric, mọi slice và tập item fail đều trùng baseline, nên gate cho merge. Mình **không hạ ngưỡng** để "bắt" nó. Cách đúng là thêm seed (n lớn hơn) hoặc thêm item cho FM-03, rồi tăng eval-set version.
+
+## Bonus: port grader sang Inspect AI
+
+- **Lệnh:** `pip install -r requirements-bonus.txt` (inspect-ai 0.3.290), sau đó chạy `python -m bonus.inspect_port --out reports/bonus_inspect_port.json` trong `src/`. Code nằm ở `src/bonus/inspect_port.py`, test ở `src/tests/test_lab9_bonus_inspect_port.py` (8 passed; CI không cài inspect-ai nên tự skip).
+- **Port gì:** 3 grader được viết lại bằng API scorer của Inspect, không gọi lại `lab9.graders`. Regex số tiền cũng viết lại độc lập.
+  - `refund_amount_correct`: so ledger với label.
+  - `reply_matches_ledger` (FM-08).
+  - `approval_bypass` (FM-07, metric `total` tự định nghĩa vì đây là số đếm, không phải tỉ lệ).
+- **Chạy thế nào:** solver chạy đúng trial runner của `lab9.eval` (shape Lab 8 trên store SQLite mới) với model `mockllm/model` nên không gọi mạng và không gọi model. Mỗi (item, seed) là một `Sample`.
+- **So khớp từng dòng** với report do `lab9.eval` sinh ra:
+
+| Run | refund_amount_correct (lab9 / Inspect) | reply_matches_ledger | approval_bypass | Khớp từng dòng |
+|---|---|---|---|---|
+| baseline_v1 `E-swarm-20261117-8682` | 0.9857 / 0.9857 | 1.0 / 1.0 | 0 / 0 | 70/70 |
+| fixed `E-fixed-20261117-8682` | 1.0 / 1.0 | 1.0 / 1.0 | 0 / 0 | 70/70 |
+| seeded_regression | 0.8571 / 0.8571 | 0.7857 / 0.7857 | 0 / 0 | 70/70 |
+| slice_regression (v2) | 0.9357 / 0.9357 | 1.0 / 1.0 | 0 / 0 | 140/140 |
+| probe `sibling_refund`+`misreport` | 0.7143 / 0.7143 | 0.8571 / 0.8571 | 20 / 20 | 70/70 |
+
+  Run probe tồn tại vì không variant công khai nào làm `approval_bypass` ≠ 0. Nếu chỉ so trên các run đó thì hai bên chỉ đang đồng ý ở giá trị 0. Shape probe được đăng ký riêng trong script bonus, không sửa `lab9/variants.py`.
+- **Kết luận:** 420/420 dòng khớp, và aggregate trùng tới 4 chữ số. Grader code là deterministic nên framework nào cũng cho cùng kết quả. Giá trị của Inspect nằm ở log, viewer và chạy song song; nó không làm thay đổi cách chấm.

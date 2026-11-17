@@ -46,6 +46,8 @@ v2 (`metric_spec_v2.yaml`, eval set v2 `e016a9d2d722`) thêm `pass_hat_5` ≥ 0.
 
 Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng cho tiêu chí đã qua calibration (κ, P, R đạt FLOORS), xem `docs/judge_audit.md`.
 
+Kiểm chéo: 3 grader `refund_amount_correct`, `reply_matches_ledger` và `approval_bypass` được port sang Inspect AI (`src/bonus/inspect_port.py`). Chạy trên 5 run (420 trial), kết quả khớp từng dòng với lab9 (`reports/bonus_inspect_port.json`, xem `docs/eval_card.md`). Vì vậy kết quả chấm không phụ thuộc vào framework eval.
+
 ## 5. Cổng release
 - Lệnh: `python -m lab9.gate --pr reports/eval_<shape>.json --baseline reports/baseline_v1.json` (v2: `--spec config/metric_spec_v2.yaml --baseline reports/baseline_v2.json`, ratchet: `--base-spec <spec trên main>`).
 - Baseline lấy từ nhánh được bảo vệ, phủ đủ `item × seed`; eval_set_sha của PR phải trùng baseline; `integrity_check` từ chối report bị chỉnh sửa (NaN, thiếu hoặc trùng dòng, chọn seed, grader crash, metric không khớp rows, đổi slice tag, nới spec).

@@ -1,0 +1,145 @@
+{
+  "ported": [
+    "refund_amount_correct",
+    "reply_matches_ledger",
+    "approval_bypass"
+  ],
+  "results": [
+    {
+      "run": "baseline_v1",
+      "shape": "swarm",
+      "lab9_run_id": "E-swarm-20261117-8682",
+      "eval_set_sha": "8682203ba616",
+      "n": 70,
+      "metrics": {
+        "refund_amount_correct": {
+          "lab9": 0.9857,
+          "inspect": 0.9857,
+          "agree": 70,
+          "disagree": []
+        },
+        "reply_matches_ledger": {
+          "lab9": 1.0,
+          "inspect": 1.0,
+          "agree": 70,
+          "disagree": []
+        },
+        "approval_bypass": {
+          "lab9": 0,
+          "inspect": 0.0,
+          "agree": 70,
+          "disagree": []
+        }
+      }
+    },
+    {
+      "run": "fixed",
+      "shape": "fixed",
+      "lab9_run_id": "E-fixed-20261117-8682",
+      "eval_set_sha": "8682203ba616",
+      "n": 70,
+      "metrics": {
+        "refund_amount_correct": {
+          "lab9": 1.0,
+          "inspect": 1.0,
+          "agree": 70,
+          "disagree": []
+        },
+        "reply_matches_ledger": {
+          "lab9": 1.0,
+          "inspect": 1.0,
+          "agree": 70,
+          "disagree": []
+        },
+        "approval_bypass": {
+          "lab9": 0,
+          "inspect": 0.0,
+          "agree": 70,
+          "disagree": []
+        }
+      }
+    },
+    {
+      "run": "seeded_regression",
+      "shape": "seeded_regression",
+      "lab9_run_id": "E-seeded_regression-20261117-8682",
+      "eval_set_sha": "8682203ba616",
+      "n": 70,
+      "metrics": {
+        "refund_amount_correct": {
+          "lab9": 0.8571,
+          "inspect": 0.8571,
+          "agree": 70,
+          "disagree": []
+        },
+        "reply_matches_ledger": {
+          "lab9": 0.7857,
+          "inspect": 0.7857,
+          "agree": 70,
+          "disagree": []
+        },
+        "approval_bypass": {
+          "lab9": 0,
+          "inspect": 0.0,
+          "agree": 70,
+          "disagree": []
+        }
+      }
+    },
+    {
+      "run": "slice_regression",
+      "shape": "slice_regression",
+      "lab9_run_id": "E-slice_regression-20261117-e016",
+      "eval_set_sha": "e016a9d2d722",
+      "n": 140,
+      "metrics": {
+        "refund_amount_correct": {
+          "lab9": 0.9357,
+          "inspect": 0.9357,
+          "agree": 140,
+          "disagree": []
+        },
+        "reply_matches_ledger": {
+          "lab9": 1.0,
+          "inspect": 1.0,
+          "agree": 140,
+          "disagree": []
+        },
+        "approval_bypass": {
+          "lab9": 0,
+          "inspect": 0.0,
+          "agree": 140,
+          "disagree": []
+        }
+      }
+    },
+    {
+      "run": "probe_sibling_misreport",
+      "shape": "probe_sibling_misreport",
+      "lab9_run_id": "E-probe_sibling_misreport-20261118-8682",
+      "eval_set_sha": "8682203ba616",
+      "n": 70,
+      "metrics": {
+        "refund_amount_correct": {
+          "lab9": 0.7143,
+          "inspect": 0.7143,
+          "agree": 70,
+          "disagree": []
+        },
+        "reply_matches_ledger": {
+          "lab9": 0.8571,
+          "inspect": 0.8571,
+          "agree": 70,
+          "disagree": []
+        },
+        "approval_bypass": {
+          "lab9": 20,
+          "inspect": 20.0,
+          "agree": 70,
+          "disagree": []
+        }
+      }
+    }
+  ],
+  "agree": true
+}
